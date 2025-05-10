@@ -68,26 +68,55 @@ def text_to_speech(text, output_file="output.wav",
         print(f"Error in speech synthesis: {str(e)}")
         return False
 
+def read_text_from_file(file_path):
+    """
+    Read text content from a file
+    
+    Args:
+        file_path (str): Path to the text file
+        
+    Returns:
+        str: Text content from the file
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading file: {str(e)}")
+        return None
+
 if __name__ == "__main__":
     # Example usage
     import sys
     import argparse
     
     parser = argparse.ArgumentParser(description="Convert text to speech using Azure OpenAI.")
-    parser.add_argument("text", nargs="?", help="The text to convert to speech")
+    parser.add_argument("text", nargs="?", help="The text to convert to speech or file path when using --from-file")
     parser.add_argument("output_file", nargs="?", default="output.wav", help="Output audio file path")
     parser.add_argument("--voice", "-v", default="alloy", help="Voice name (alloy, echo, fable, onyx, nova, shimmer)")
     parser.add_argument("--speed", "-s", type=float, default=1.0, help="Speech rate (1.0 is normal, 1.2 is 20%% faster)")
     parser.add_argument("--model", "-m", default="gpt-4o-mini-tts", help="Model name for TTS")
+    parser.add_argument("--from-file", "-f", action="store_true", help="Read text from the specified file")
     
     if len(sys.argv) > 1:
         args = parser.parse_args()
+        
         if args.text:
-            text_to_speech(args.text, args.output_file, 
-                          voice_name=args.voice, 
-                          speech_rate=args.speed,
-                          model_name=args.model)
+            # Get the text content - either direct or from a file
+            if args.from_file:
+                content = read_text_from_file(args.text)
+                if content is None:
+                    sys.exit(1)
+            else:
+                content = args.text
+                
+            text_to_speech(content, args.output_file, 
+                         voice_name=args.voice, 
+                         speech_rate=args.speed,
+                         model_name=args.model)
         else:
             parser.print_help()
     else:
-        print("Usage: python azure_tts.py \"Text to convert to speech\" [output_file.wav] [--voice VOICE] [--speed SPEED]")
+        print("Usage examples:")
+        print("  1. Direct text: python azure_tts.py \"Text to convert\" output.wav")
+        print("  2. From file: python azure_tts.py input.txt output.wav --from-file")

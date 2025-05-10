@@ -1,0 +1,9 @@
+Hello and welcome to our demonstration of the RCABot.
+
+When an engineer encounters this issue, rather than spending hours investigating from scratch, they can simply enter the command /RCABot to initiate our automated analysis.
+
+The bot immediately begins analyzing logs, metrics, and system state to quickly identify the root cause.
+
+This not only saves valuable engineering time but also ensures consistent troubleshooting approaches across the organization.
+
+Let's see it in action!
